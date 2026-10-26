@@ -11,19 +11,9 @@ var _typeof3 = _interopRequireDefault(_typeof2);
 
 var _FirestoreTypes = require('./FirestoreTypes');
 
-var _firebaseAdmin = require('firebase-admin');
-
-var _firebaseAdmin2 = _interopRequireDefault(_firebaseAdmin);
+var _firestore = require('firebase-admin/firestore');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function clone(objToClone, _ref) {
-  var _ref$prototype = _ref.prototype,
-      prototype = _ref$prototype === undefined ? Object.prototype : _ref$prototype;
-
-  var clonedObj = Object.create(prototype);
-  return Object.assign(clonedObj, objToClone);
-}
 
 // Returns if a value is a string
 var isString = exports.isString = function isString(value) {
@@ -103,13 +93,9 @@ var isDate = exports.isDate = function isDate(value) {
 };
 
 var isDocumentReference = exports.isDocumentReference = function isDocumentReference(value) {
-  if (value instanceof _firebaseAdmin2.default.firestore.DocumentReference) {
-    // Create a clone to ensure instance of DocumentReference and to mutate
-    var documentReference = clone(value, _firebaseAdmin2.default.firestore.DocumentReference.prototype);
-    // Remove _firestore as it is unnecessary and we do not want to keep it
-    delete documentReference._firestore;
+  if (value instanceof _firestore.DocumentReference) {
     return {
-      value: documentReference,
+      value: { path: value.path },
       type: _FirestoreTypes.TYPES.DOCUMENT_REFERENCE
     };
   }
@@ -117,7 +103,7 @@ var isDocumentReference = exports.isDocumentReference = function isDocumentRefer
 };
 
 var isGeopoint = exports.isGeopoint = function isGeopoint(value) {
-  if (value instanceof _firebaseAdmin2.default.firestore.GeoPoint) {
+  if (value instanceof _firestore.GeoPoint) {
     return {
       value: value,
       type: _FirestoreTypes.TYPES.GEOPOINT

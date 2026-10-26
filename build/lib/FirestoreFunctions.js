@@ -5,10 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.constructDocumentReference = exports.getFireApp = undefined;
 
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
 var _colors = require('colors');
 
 var _colors2 = _interopRequireDefault(_colors);
@@ -17,19 +13,17 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _firebaseAdmin = require('firebase-admin');
-
-var _firebaseAdmin2 = _interopRequireDefault(_firebaseAdmin);
+var _app = require('firebase-admin/app');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Initializes and returns Firebase App and then .firestore() can be called
+// Initializes and returns a Firebase Admin App.
 var getFireApp = function getFireApp(credentialsPath, appName) {
   try {
     var credentialsBuffer = _fs2.default.readFileSync(credentialsPath);
     var credentials = JSON.parse(credentialsBuffer.toString());
-    return _firebaseAdmin2.default.initializeApp({
-      credential: _firebaseAdmin2.default.credential.cert(credentials)
+    return (0, _app.initializeApp)({
+      credential: (0, _app.cert)(credentials)
     }, appName || credentialsPath);
   } catch (error) {
     console.log(_colors2.default.bold(_colors2.default.red('Unable to read: ')) + _colors2.default.bold(credentialsPath) + ' - ' + error);
@@ -37,40 +31,18 @@ var getFireApp = function getFireApp(credentialsPath, appName) {
   }
 };
 
-// Create a DocumentReference instance without the _firestore field since
-// it does not need to be stored or used for restoring - The restore firestore
-// is used to change DocumentReference app partition to the restore database
+// Recreate a reference in the destination Firestore from its exported path.
 //
-// firestore is a FirebaseApp firestore instance
-// referencePath looks like:
-// "_referencePath": {
-//   "segments": ["CompanyCollection", "An7xh0LqvWDocumentId",
-//      "RoomsSubCollection", "conferenceRoom-001"],
-//   "_projectId": "backuprestore-f8687",
-//   "_databaseId": "(default)"
-// }
+// firestore is a Firestore instance. referencePath accepts the public path
+// string and the legacy serialized segments object.
 // Helper functions to work with Firestore instances
 var constructDocumentReference = function constructDocumentReference(firestore, referencePath) {
-  if (!firestore || !referencePath || !referencePath.segments) {
-    return;
-  }
+  if (!firestore || !referencePath) return;
 
-  var segments = [].concat((0, _toConsumableArray3.default)(referencePath.segments));
-  var docRef = firestore;
+  var path = typeof referencePath === 'string' ? referencePath : referencePath.path || (referencePath.segments || []).join('/');
+  if (!path) return;
 
-  while (segments.length) {
-    var collectionName = segments.shift();
-    var documentName = segments.shift();
-    docRef = docRef.collection(collectionName).doc(documentName);
-  }
-
-  // Create proper instance of DocumentReference
-  var documentReference = new _firebaseAdmin2.default.firestore.DocumentReference(firestore, docRef._referencePath);
-
-  // Remove _firestore field since it is not necessary
-  delete documentReference._firestore;
-
-  return documentReference;
+  return firestore.doc(path);
 };
 
 exports.getFireApp = getFireApp;

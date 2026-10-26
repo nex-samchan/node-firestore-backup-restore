@@ -9,9 +9,7 @@ var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
-var _firebaseAdmin = require('firebase-admin');
-
-var _firebaseAdmin2 = _interopRequireDefault(_firebaseAdmin);
+var _firestore = require('firebase-admin/firestore');
 
 var _FirestoreTypes = require('./FirestoreTypes');
 
@@ -104,11 +102,11 @@ var constructFirestoreDocumentObject = exports.constructFirestoreDocumentObject 
         } catch (valueNotAnObjErr) {}
         console.error('Cannot properly create DocumentReference\n          without firestore credentials. Firestore is ' + firestore + '. \n          Skipping field: ' + valueStr);
       } else {
-        var documentReference = (0, _FirestoreFunctions.constructDocumentReference)(firestore, value._referencePath);
+        var documentReference = (0, _FirestoreFunctions.constructDocumentReference)(firestore, value);
         documentDataToStore = Object.assign({}, documentDataToStore, (0, _defineProperty3.default)({}, key, documentReference));
       }
     } else if (type === _FirestoreTypes.TYPES.GEOPOINT) {
-      var geopoint = new _firebaseAdmin2.default.firestore.GeoPoint(value._latitude, value._longitude);
+      var geopoint = new _firestore.GeoPoint(value._latitude, value._longitude);
       documentDataToStore = Object.assign({}, documentDataToStore, (0, _defineProperty3.default)({}, key, geopoint));
     } else {
       console.warn('Unsupported type, ' + type + ' from {' + key + ': ' + value + '} in ' + JSON.stringify(documentData));

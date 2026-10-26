@@ -5,7 +5,7 @@ import colors from 'colors';
 
 import process from 'process';
 import fs from 'fs';
-import Firebase from 'firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
 import mkdirp from 'mkdirp';
 import path from 'path';
 
@@ -244,10 +244,10 @@ const backupCollection = (
   }
 };
 
-const accountDb = accountCredentialsPath ? accountApp.firestore() : null;
+const accountDb = accountCredentialsPath ? getFirestore(accountApp) : null;
 
 export const restoreAccountDb = restoreAccountCredentialsPath
-  ? restoreAccountApp.firestore()
+  ? getFirestore(restoreAccountApp)
   : null;
 
 const restoreDocument = (collectionName: string, document: Object) => {

@@ -21,9 +21,7 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _firebaseAdmin = require('firebase-admin');
-
-var _firebaseAdmin2 = _interopRequireDefault(_firebaseAdmin);
+var _firestore = require('firebase-admin/firestore');
 
 var _mkdirp = require('mkdirp');
 
@@ -171,9 +169,9 @@ var backupCollection = function backupCollection(collection, backupPath, logPath
   }
 };
 
-var accountDb = accountCredentialsPath ? accountApp.firestore() : null;
+var accountDb = accountCredentialsPath ? (0, _firestore.getFirestore)(accountApp) : null;
 
-var restoreAccountDb = exports.restoreAccountDb = restoreAccountCredentialsPath ? restoreAccountApp.firestore() : null;
+var restoreAccountDb = exports.restoreAccountDb = restoreAccountCredentialsPath ? (0, _firestore.getFirestore)(restoreAccountApp) : null;
 
 var restoreDocument = function restoreDocument(collectionName, document) {
   var restoreMsg = 'Restoring to collection ' + collectionName + ' document ' + document.id;

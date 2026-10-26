@@ -1,4 +1,4 @@
-import Firebase from 'firebase-admin';
+import { getFirestore, GeoPoint } from 'firebase-admin/firestore';
 import path from 'path';
 
 import {
@@ -21,9 +21,9 @@ const testFirebaseApp = getFireApp(testFirestoreCredentialsPath);
 // as optional param for constructFirestoreDocumentObject
 const firestore = {
   firestore:
-    !testFirebaseApp || !testFirebaseApp.firestore
+    !testFirebaseApp || testFirebaseApp instanceof Error
       ? undefined
-      : testFirebaseApp.firestore()
+      : getFirestore(testFirebaseApp)
 };
 
 // testObjects used for nested objects in Object or Array
@@ -74,7 +74,7 @@ const numberFieldFloat = {
 };
 
 const geoPointField = {
-  value: new Firebase.firestore.GeoPoint(-32.8417, -64.3),
+  value: new GeoPoint(-32.8417, -64.3),
   type: TYPES.GEOPOINT
 };
 
